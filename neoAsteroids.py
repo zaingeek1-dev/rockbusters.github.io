@@ -1,9 +1,11 @@
 import requests
 import math
-from datetime import datetime
+# FIX: Import timezone
+from datetime import datetime, date, timezone
 
 NASA_API_BASE = 'https://api.nasa.gov/neo/rest/v1'
 API_KEY = 'lr86Sx6eyQXbNm32gmmPAuHzzJeXTIfUdzcTjiGB'
+
 
 def fetch_neo_by_reference_id(reference_id):
     """Fetch detailed NEO data from NASA API"""
@@ -13,25 +15,30 @@ def fetch_neo_by_reference_id(reference_id):
     response.raise_for_status()
     return response.json()
 
+
 def calculate_mass(diameter_m, density=3000):
     """Calculate asteroid mass assuming spherical shape"""
     radius = diameter_m / 2
-    volume = (4/3) * math.pi * radius**3
+    volume = (4 / 3) * math.pi * radius ** 3
     return volume * density
+
 
 def calculate_kinetic_energy(mass_kg, velocity_ms):
     """Calculate kinetic energy in Joules"""
-    return 0.5 * mass_kg * velocity_ms**2
+    return 0.5 * mass_kg * velocity_ms ** 2
+
 
 def tnt_equivalent(energy_joules):
     """Convert energy to TNT equivalent"""
     tnt_energy = 4.184e6  # J per kg TNT
     return energy_joules / tnt_energy
 
+
 def crater_diameter(energy_joules, target_density=2500, gravity=9.81):
     """Estimate crater diameter using scaling laws"""
     scaling_factor = 1.8
-    return scaling_factor * (energy_joules / (target_density * gravity))**(1/3.4)
+    return scaling_factor * (energy_joules / (target_density * gravity)) ** (1 / 3.4)
+
 
 def seismic_magnitude(energy_joules):
     """Convert impact energy to equivalent earthquake magnitude"""
@@ -39,6 +46,7 @@ def seismic_magnitude(energy_joules):
         return 0
     log_energy = math.log10(energy_joules)
     return (log_energy - 5.24) / 1.44
+
 
 def risk_assessment(diameter_m, miss_distance_km, is_hazardous):
     """Provide risk assessment based on size and approach"""
@@ -62,6 +70,7 @@ def risk_assessment(diameter_m, miss_distance_km, is_hazardous):
 
     return size_risk, approach_risk
 
+
 def estimate_casualties(diameter_m, impact_location="urban"):
     """Rough casualty estimates based on diameter and location"""
     if diameter_m < 20:
@@ -72,6 +81,7 @@ def estimate_casualties(diameter_m, impact_location="urban"):
         return "Hundreds of thousands to millions" if impact_location == "urban" else "Tens of thousands"
     else:
         return "Millions to tens of millions" if impact_location == "urban" else "Hundreds of thousands"
+
 
 def economic_damage_estimate(diameter_m):
     """Rough economic damage estimates in billions USD"""
@@ -84,8 +94,47 @@ def economic_damage_estimate(diameter_m):
     else:
         return "1,000+ billion USD (potential civilization impact)"
 
+
+def parse_approach_date(approach):
+    """Safely parse the close approach date string into a datetime.date object."""
+    try:
+        # Assumes date format is 'YYYY-MM-DD'
+        return datetime.strptime(approach.get('close_approach_date', ''), '%Y-%m-%d').date()
+    except Exception:
+        return None
+
+
+def get_historical_approaches(approaches):
+    """
+    Filters and returns the last 5 close approaches that occurred BEFORE today.
+    The list is returned from the most recent to the oldest.
+    """
+    # FIX: Use timezone-aware datetime.now(timezone.utc) - compatible with Python < 3.11
+    today = datetime.now(timezone.utc).date()
+
+    # 1. Filter: Only approaches that occurred strictly in the past
+    past_approaches = [
+        a for a in approaches
+        if (date_obj := parse_approach_date(a)) is not None and date_obj < today
+    ]
+
+    # 2. Sort: Sort by date (most recent first)
+    past_approaches.sort(
+        key=lambda x: parse_approach_date(x) or date.min,
+        reverse=True
+    )
+
+    # 3. Return: The top 5
+    return past_approaches[:5]
+
+
 def print_comprehensive_analysis(neo):
     """Print detailed analysis of the NEO"""
+    # Current UTC date for filtering and context
+    # FIX: Use timezone-aware datetime.now(timezone.utc)
+    now_utc = datetime.now(timezone.utc)
+    today = now_utc.date()
+
     print("=" * 80)
     print(f"COMPREHENSIVE ASTEROID ASSESSMENT: {neo.get('name')}")
     print("=" * 80)
@@ -136,7 +185,8 @@ def print_comprehensive_analysis(neo):
     print(f"Aphelion distance: {orbital_data.get('aphelion_distance', 'Unknown')} AU")
 
     orbit_class = orbital_data.get('orbit_class', {})
-    print(f"Orbit class: {orbit_class.get('orbit_class_type', 'Unknown')} - {orbit_class.get('orbit_class_description', 'Unknown')}")
+    print(
+        f"Orbit class: {orbit_class.get('orbit_class_type', 'Unknown')} - {orbit_class.get('orbit_class_description', 'Unknown')}")
 
     # Close Approaches Analysis
     print("\n🎯 CLOSE APPROACH HISTORY & FUTURE")
@@ -147,33 +197,40 @@ def print_comprehensive_analysis(neo):
         print(f"Total recorded close approaches: {len(approaches)}")
 
         # Find closest approach
-        closest_approach = min(approaches, key=lambda x: float(x.get('miss_distance', {}).get('kilometers', float('inf'))))
+        closest_approach = min(approaches,
+                               key=lambda x: float(x.get('miss_distance', {}).get('kilometers', float('inf'))))
         closest_distance = float(closest_approach.get('miss_distance', {}).get('kilometers', 0))
         closest_date = closest_approach.get('close_approach_date', 'Unknown')
 
+        # FIX: Explicitly label the reference time as UTC
+        print(f"Current Reference Date: {now_utc.strftime('%Y-%m-%d')} (UTC)")
         print(f"Closest recorded approach: {closest_date}")
-        print(f"Closest distance: {closest_distance:,.0f} km ({closest_distance/384400:.2f} lunar distances)")
+        print(f"Closest distance: {closest_distance:,.0f} km ({closest_distance / 384400:.2f} lunar distances)")
 
-        # Recent and upcoming approaches
-        current_year = datetime.now().year
-        recent_approaches = [a for a in approaches if int(a.get('close_approach_date', '0000')[:4]) >= current_year - 5]
-        future_approaches = [a for a in approaches if int(a.get('close_approach_date', '0000')[:4]) > current_year]
+        # Retrieve and print the last 5 historical approaches
+        historical_approaches = get_historical_approaches(approaches)
 
-        if recent_approaches:
-            print(f"\nRecent approaches (last 5 years): {len(recent_approaches)}")
-            for approach in recent_approaches[:5]:
-                date = approach.get('close_approach_date')
+        if historical_approaches:
+            print(f"\nLast 5 Historical Approaches:")
+            for approach in historical_approaches:
+                date_str = approach.get('close_approach_date')
                 distance = float(approach.get('miss_distance', {}).get('kilometers', 0))
                 velocity = approach.get('relative_velocity', {}).get('kilometers_per_second', 'N/A')
-                print(f"  {date}: {distance:,.0f} km, {velocity} km/s")
+                print(f"  {date_str}: {distance:,.0f} km, {velocity} km/s")
 
-        if future_approaches:
-            print(f"\nUpcoming approaches: {len(future_approaches)}")
-            for approach in future_approaches[:5]:
-                date = approach.get('close_approach_date')
+        # Upcoming approaches filter (strictly after today)
+        upcoming_approaches = [
+            a for a in approaches
+            if (date_obj := parse_approach_date(a)) is not None and date_obj > today
+        ]
+
+        if upcoming_approaches:
+            print(f"\nUpcoming approaches: {len(upcoming_approaches)}")
+            for approach in upcoming_approaches[:5]:
+                date_str = approach.get('close_approach_date')
                 distance = float(approach.get('miss_distance', {}).get('kilometers', 0))
                 velocity = approach.get('relative_velocity', {}).get('kilometers_per_second', 'N/A')
-                print(f"  {date}: {distance:,.0f} km, {velocity} km/s")
+                print(f"  {date_str}: {distance:,.0f} km, {velocity} km/s")
 
         # Risk Assessment
         if closest_distance < 10000000:  # Within 10 million km
@@ -198,7 +255,7 @@ def print_comprehensive_analysis(neo):
 
     print(f"Assumed impact velocity: 20 km/s (typical)")
     print(f"Kinetic energy: {energy_j:.2e} Joules")
-    print(f"TNT equivalent: {tnt_kg:.2e} kg ({tnt_kg/1e9:.1f} gigatons)")
+    print(f"TNT equivalent: {tnt_kg:.2e} kg ({tnt_kg / 1e9:.1f} gigatons)")
     print(f"Estimated crater diameter: {crater_d:.0f} meters")
     print(f"Equivalent earthquake magnitude: {eq_magnitude:.1f}")
 
@@ -237,6 +294,7 @@ def print_comprehensive_analysis(neo):
 
     print("\n" + "=" * 80)
 
+
 if __name__ == '__main__':
     print("🛡️ NASA NEO COMPREHENSIVE ANALYSIS TOOL")
     print("Provides detailed asteroid information including impact assessments")
@@ -255,7 +313,7 @@ if __name__ == '__main__':
         except requests.HTTPError as e:
             if e.response.status_code == 404:
                 print(f"❌ NEO with ID '{ref_id}' not found in NASA database.")
-                print("Try these example IDs: 2000433, 2000719, 2000887, 2001036, 2001221")
+                print("Try these example IDs: 2001865, 2000433, 2001221, 2000719, 2001915")
             else:
                 print(f"❌ HTTP Error: {e}")
         except Exception as e:
