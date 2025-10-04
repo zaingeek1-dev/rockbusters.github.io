@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Planetary Defense Coordination - Asteroid Monitoring & Assessment</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>🛡️ PLANETARY DEFENSE COORDINATION</h1>
+                <span>International asteroid monitoring and assessment initiative</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item active" data-section="dashboard">Monitoring Dashboard</button>
+                <button class="nav-item" data-section="threats">Active Observations</button>
+                <button class="nav-item" data-section="calculator">Impact Assessment</button>
+                <button class="nav-item" data-section="deflection">Mitigation Strategies</button>
+                <button class="nav-item" data-section="risk-map">Regional Analysis</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Planetary Defense Monitoring Dashboard</h2>
+                    <p>Our collaborative international efforts continue to track and assess near-Earth asteroids through coordinated observation programs</p>
+                    <div class="live-indicator">
+                        <span class="pulse-dot"></span>
+                        <span class="status-text">Data last synchronized: <span id="lastUpdate">2024-10-04 09:30 UTC</span></span>
+                    </div>
+                </div>
+
+                <div class="institutional-notice">
+                    <p class="lead-text">We recognize the critical importance of transparent, science-based communication regarding potential asteroid threats. This assessment platform represents the collaborative efforts of NASA's Planetary Defense Coordination Office, ESA's Space Situational Awareness program, and international partners in the Minor Planet Center network.</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="metric-card critical">
+                        <div class="metric-icon">🔍</div>
+                        <div class="metric-value">2,347</div>
+                        <div class="metric-label">Objects Under Active Monitoring</div>
+                        <div class="metric-trend status--info">Current detection capabilities continue to expand</div>
+                    </div>
+                    <div class="metric-card high">
+                        <div class="metric-icon">⚠️</div>
+                        <div class="metric-value">156</div>
+                        <div class="metric-label">Potentially Hazardous Asteroids</div>
+                        <div class="metric-trend status--warning">Warranting enhanced observation protocols</div>
+                    </div>
+                    <div class="metric-card moderate">
+                        <div class="metric-icon">📅</div>
+                        <div class="metric-value">April 13, 2029</div>
+                        <div class="metric-label">Next Significant Close Approach</div>
+                        <div class="metric-trend status--info">99942 Apophis - closely monitored trajectory</div>
+                    </div>
+                    <div class="metric-card success">
+                        <div class="metric-icon">✅</div>
+                        <div class="metric-value">DEMONSTRATED</div>
+                        <div class="metric-label">Deflection Capability</div>
+                        <div class="metric-trend status--success">DART mission validated kinetic impactor approach</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-panels">
+                    <div class="panel threat-panel">
+                        <h3>🎯 Priority Observation Targets</h3>
+                        <p class="panel-subtitle">Objects currently receiving enhanced monitoring attention from our international partners</p>
+                        <div class="threat-list" id="priorityThreats">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="panel impact-comparison">
+                        <h3>📊 Impact Energy Analysis</h3>
+                        <p class="panel-subtitle">Comparative assessment of potential impact scenarios based on current modeling capabilities</p>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="energyComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="disclaimer-section">
+                    <p class="disclaimer-text">
+                        <strong>Assessment Limitations:</strong> Our projections are based on available observational data and current modeling capabilities. Long-term orbital predictions are subject to ongoing refinement as additional observations become available. We maintain open collaboration with international partners to ensure the most comprehensive monitoring possible.
+                    </p>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="btn btn--primary" onclick="showSection('calculator')">📈 Explore Impact Scenarios</button>
+                    <button class="btn btn--outline" onclick="showSection('threats')">🔍 Review Current Observations</button>
+                    <button class="btn btn--outline" onclick="showSection('deflection')">🛡️ Examine Mitigation Options</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Observations Section -->
+        <section id="threats" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Active Observation Catalog</h2>
+                    <p>Our comprehensive database reflects ongoing monitoring efforts by international space agencies and research institutions</p>
+                </div>
+
+                <div class="observation-notice">
+                    <p class="notice-text">
+                        <strong>Data Confidence Levels:</strong> Assessment reliability varies based on observation duration, tracking quality, and object characteristics. We continue to refine our understanding through sustained international collaboration.
+                    </p>
+                </div>
+                
+                <div class="threat-controls">
+                    <input type="text" id="searchInput" placeholder="Search by designation or informal name..." class="form-control">
+                    <select id="threatLevelFilter" class="form-control">
+                        <option value="all">All Priority Levels</option>
+                        <option value="HIGH">High Priority Monitoring</option>
+                        <option value="MODERATE">Routine Enhanced Tracking</option>
+                        <option value="LOW">Standard Observation</option>
+                    </select>
+                    <select id="sizeFilter" class="form-control">
+                        <option value="all">All Size Categories</option>
+                        <option value="small">Sub-100m Objects</option>
+                        <option value="medium">Intermediate Scale (100m-1km)</option>
+                        <option value="large">Large Asteroids (>1km)</option>
+                    </select>
+                </div>
+
+                <div class="threats-grid" id="threatsGrid">
+                    <!-- Threat cards populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact Assessment Section -->
+        <section id="calculator" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Impact Assessment Modeling Tool</h2>
+                    <p>Educational scenarios based on current scientific understanding and modeling capabilities</p>
+                </div>
+
+                <div class="modeling-disclaimer">
+                    <div class="disclaimer-card">
+                        <h4>⚠️ Important Modeling Limitations</h4>
+                        <p>These projections represent estimates based on current scientific models and may not reflect the full complexity of actual impact scenarios. Results should be considered within the context of model uncertainties and the preliminary nature of impact effect calculations. Our assessment team continues to refine these methodologies in collaboration with international research partners.</p>
+                    </div>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="calculator-controls">
+                        <h3>Scenario Parameters</h3>
+                        
+                        <div class="control-group">
+                            <label class="form-label">Select Reference Object</label>
+                            <select id="asteroidSelect" class="form-control">
+                                <option value="custom">Custom Parameters</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="form-label">Estimated Diameter: <span id="diameterValue">300</span>m</label>
+                            <input type="range" id="diameterSlider" min="20" max="2000" value="300" class="slider">
+                            <div class="size-context" id="sizeContext">Diameter estimates subject to observational uncertainty</div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="form-label">Approach Velocity: <span id="velocityValue">20.0</span> km/s</label>
+                            <input type="range" id="velocitySlider" min="11" max="72" value="20" step="0.1" class="slider">
+                            <div class="velocity-context">Based on typical encounter velocities</div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="form-label">Impact Location Selection</label>
+                            <div class="location-display" id="locationDisplay">
+                                Select coordinates on the regional map<br>
+                                <span class="coordinates">Geographic coordinates: Not specified</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn--primary btn--full-width" id="calculateImpact">📊 Generate Impact Assessment</button>
+                    </div>
+
+                    <div class="world-map-container">
+                        <h3>Regional Impact Zone Selection</h3>
+                        <div class="world-map" id="worldMap">
+                            <svg viewBox="0 0 800 400" class="impact-map">
+                                <rect width="800" height="400" fill="#0a1929"/>
+                                <!-- Simplified world continents -->
+                                <path d="M 120 80 L 280 60 L 340 100 L 320 160 L 280 180 L 200 200 L 120 180 Z" fill="#1a2332" stroke="#2d3748" stroke-width="1"/>
+                                <path d="M 350 100 L 520 80 L 580 120 L 600 160 L 580 200 L 480 220 L 400 200 L 350 160 Z" fill="#1a2332" stroke="#2d3748" stroke-width="1"/>
+                                <path d="M 80 250 L 180 230 L 220 270 L 200 320 L 140 340 L 80 320 Z" fill="#1a2332" stroke="#2d3748" stroke-width="1"/>
+                                <path d="M 480 250 L 620 240 L 680 280 L 660 330 L 580 350 L 500 340 L 480 300 Z" fill="#1a2332" stroke="#2d3748" stroke-width="1"/>
+                                <!-- Population centers -->
+                                <circle class="city-marker" cx="250" cy="120" r="3" fill="#32b8cd" data-tooltip="Major metropolitan area"/>
+                                <circle class="city-marker" cx="480" cy="140" r="3" fill="#32b8cd" data-tooltip="Major metropolitan area"/>
+                                <circle class="city-marker" cx="580" cy="160" r="3" fill="#32b8cd" data-tooltip="Major metropolitan area"/>
+                                <!-- Impact visualization -->
+                                <circle id="impactPoint" cx="0" cy="0" r="0" fill="#ff4444" stroke="#ffffff" stroke-width="2" opacity="0"/>
+                                <circle id="impactRadius" cx="0" cy="0" r="0" fill="none" stroke="#ff4444" stroke-width="2" opacity="0" stroke-dasharray="5,5"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-panel" id="resultsPanel" style="display: none;">
+                    <h3>📊 Preliminary Impact Assessment Results</h3>
+                    <div class="confidence-notice">
+                        <p><strong>Assessment Confidence:</strong> These results represent preliminary estimates based on simplified models. Actual impact effects would depend on numerous additional factors including object composition, atmospheric conditions, and local geology.</p>
+                    </div>
+                    <div class="results-grid">
+                        <div class="result-item energy">
+                            <div class="result-icon">⚡</div>
+                            <div class="result-label">Estimated Energy Release</div>
+                            <div class="result-value" id="kineticEnergy">-</div>
+                            <div class="result-context">Based on kinetic energy calculations</div>
+                        </div>
+                        <div class="result-item explosion">
+                            <div class="result-icon">💥</div>
+                            <div class="result-label">TNT Equivalent Estimate</div>
+                            <div class="result-value" id="tntEquivalent">-</div>
+                            <div class="result-context">Comparative energy reference</div>
+                        </div>
+                        <div class="result-item crater">
+                            <div class="result-icon">🕳️</div>
+                            <div class="result-label">Potential Crater Formation</div>
+                            <div class="result-value" id="craterDiameter">-</div>
+                            <div class="result-context">Subject to geological conditions</div>
+                        </div>
+                        <div class="result-item earthquake">
+                            <div class="result-icon">🌊</div>
+                            <div class="result-label">Seismic Effects Estimate</div>
+                            <div class="result-value" id="earthquakeMagnitude">-</div>
+                            <div class="result-context">Approximate magnitude scaling</div>
+                        </div>
+                        <div class="result-item casualties">
+                            <div class="result-icon">👥</div>
+                            <div class="result-label">Potential Population Impact</div>
+                            <div class="result-value" id="casualties">-</div>
+                            <div class="result-context">Highly dependent on regional factors</div>
+                        </div>
+                        <div class="result-item damage">
+                            <div class="result-icon">🏗️</div>
+                            <div class="result-label">Economic Impact Estimate</div>
+                            <div class="result-value" id="economicDamage">-</div>
+                            <div class="result-context">Preliminary economic scaling</div>
+                        </div>
+                    </div>
+                    <div class="results-disclaimer">
+                        <p><strong>Important:</strong> These assessments are provided for educational purposes and should not be used for emergency planning or policy decisions without consultation with appropriate scientific and governmental authorities.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mitigation Strategies Section -->
+        <section id="deflection" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Planetary Defense Mitigation Strategies</h2>
+                    <p>Current research and development efforts in asteroid deflection technologies represent ongoing international collaboration</p>
+                </div>
+
+                <div class="strategy-intro">
+                    <p class="lead-text">We understand the gravity of potential asteroid threats and continue to advance our technological capabilities through coordinated international research. While significant progress has been achieved, our assessment team recognizes that planetary defense remains a complex challenge requiring sustained scientific collaboration and technological development.</p>
+                </div>
+
+                <div class="strategies-grid" id="strategiesGrid">
+                    <!-- Strategy cards populated by JavaScript -->
+                </div>
+
+                <div class="strategy-comparison">
+                    <h3>Mission Effectiveness Analysis</h3>
+                    <p>Preliminary assessments suggest that mission effectiveness varies considerably based on threat characteristics and available response time. Our analysis team continues to refine these projections.</p>
+                    
+                    <div class="comparison-controls">
+                        <div class="control-group">
+                            <label class="form-label">Warning Time Available: <span id="warningTimeValue">10</span> years</label>
+                            <input type="range" id="warningTimeSlider" min="1" max="25" value="10" class="slider">
+                            <div class="time-context">Extended warning periods enable more mission options</div>
+                        </div>
+                        <div class="control-group">
+                            <label class="form-label">Object Diameter: <span id="strategyDiameterValue">300</span>m</label>
+                            <input type="range" id="strategyDiameterSlider" min="50" max="1000" value="300" class="slider">
+                            <div class="size-context">Larger objects present additional technical challenges</div>
+                        </div>
+                    </div>
+                    
+                    <div class="effectiveness-chart-container">
+                        <canvas id="effectivenessChart" style="max-height: 400px;"></canvas>
+                    </div>
+                    <div class="chart-disclaimer">
+                        <p><strong>Analysis Limitations:</strong> Effectiveness estimates are preliminary and subject to considerable uncertainty. Actual mission success would depend on numerous technical, operational, and political factors not fully captured in these models.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Regional Analysis Section -->
+        <section id="risk-map" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Regional Vulnerability Assessment</h2>
+                    <p>Understanding the geographic and demographic factors that influence impact consequences across different regions</p>
+                </div>
+
+                <div class="risk-intro">
+                    <p class="lead-text">We recognize that asteroid impact effects vary significantly based on regional characteristics, population distribution, and local infrastructure. Our assessment team approaches this analysis with appropriate sensitivity to the human implications of potential impact scenarios.</p>
+                </div>
+
+                <div class="risk-controls">
+                    <div class="layer-toggles">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="populationLayer" checked>
+                            <span>🏙️ Population Distribution Analysis</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="coastalLayer" checked>
+                            <span>🌊 Coastal Vulnerability Zones</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="infrastructureLayer">
+                            <span>🏭 Critical Infrastructure Networks</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="historicalLayer">
+                            <span>📍 Historical Impact Sites</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="risk-map-container">
+                    <div class="risk-map">
+                        <svg viewBox="0 0 800 400" class="risk-svg">
+                            <rect width="800" height="400" fill="#0a1929"/>
+                            <!-- World map with risk overlays -->
+                            <g id="continents">
+                                <path d="M 120 80 L 280 60 L 340 100 L 320 160 L 280 180 L 200 200 L 120 180 Z" fill="#1a2332" stroke="#2d3748"/>
+                                <path d="M 350 100 L 520 80 L 580 120 L 600 160 L 580 200 L 480 220 L 400 200 L 350 160 Z" fill="#1a2332" stroke="#2d3748"/>
+                                <path d="M 80 250 L 180 230 L 220 270 L 200 320 L 140 340 L 80 320 Z" fill="#1a2332" stroke="#2d3748"/>
+                                <path d="M 480 250 L 620 240 L 680 280 L 660 330 L 580 350 L 500 340 L 480 300 Z" fill="#1a2332" stroke="#2d3748"/>
+                            </g>
+                            <!-- Population density overlay -->
+                            <g id="populationOverlay">
+                                <circle cx="250" cy="120" r="25" fill="rgba(50,184,205,0.3)" class="population-marker" data-tooltip="Major metropolitan region"/>
+                                <circle cx="480" cy="140" r="20" fill="rgba(50,184,205,0.3)" class="population-marker" data-tooltip="Urban concentration area"/>
+                                <circle cx="580" cy="160" r="30" fill="rgba(50,184,205,0.3)" class="population-marker" data-tooltip="High-density population center"/>
+                                <circle cx="200" cy="280" r="15" fill="rgba(50,184,205,0.2)" class="population-marker" data-tooltip="Regional population center"/>
+                                <circle cx="540" cy="300" r="18" fill="rgba(50,184,205,0.2)" class="population-marker" data-tooltip="Coastal metropolitan area"/>
+                            </g>
+                            <!-- Coastal risk zones -->
+                            <g id="coastalOverlay">
+                                <path d="M 120 180 Q 200 170 280 180" stroke="rgba(50,184,205,0.6)" stroke-width="3" fill="none" class="tsunami-zone"/>
+                                <path d="M 350 200 Q 450 190 580 200" stroke="rgba(50,184,205,0.6)" stroke-width="3" fill="none" class="tsunami-zone"/>
+                            </g>
+                            <!-- Historical impacts -->
+                            <g id="historicalOverlay" style="display: none;">
+                                <circle cx="520" cy="120" r="8" fill="#ffc185" class="historical-impact" data-tooltip="Tunguska Event (1908) - Forest devastation"/>
+                                <circle cx="590" cy="180" r="6" fill="#ff9f43" class="historical-impact" data-tooltip="Chelyabinsk Event (2013) - Urban airburst"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="scenario-comparison">
+                    <h3>Comparative Impact Analysis</h3>
+                    <p>After careful consideration of various impact scenarios, our assessment team has developed these regional comparisons to illustrate potential consequences across different geographic and demographic contexts.</p>
+                    <div class="scenarios-list" id="scenariosList">
+                        <!-- Scenarios populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="vulnerability-disclaimer">
+                    <p><strong>Regional Assessment Note:</strong> We understand the sensitive nature of regional vulnerability assessments and emphasize that these analyses are conducted with the utmost respect for affected populations. Our goal is to provide scientifically-based information that can support informed decision-making while acknowledging the inherent uncertainties in impact modeling.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Educational Tooltip -->
+    <div id="tooltip" class="tooltip hidden">
+        <div class="tooltip-content"></div>
+        <div class="tooltip-arrow"></div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Processing assessment data...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
